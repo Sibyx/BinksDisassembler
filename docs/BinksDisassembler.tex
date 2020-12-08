@@ -7,6 +7,9 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{float}
+
+\graphicspath{ {diagrams/} }
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -69,9 +72,44 @@ Architektúra definuje aj relatívne komplexný model využívania vyrovnávací
 
 \subsection{Adresovacie módy a konvencie}
 
-Inštrukcie využívajú dva adresovacie módy: 
+Inštrukcie využívajú dva nepriame adresové módy:
+
+\begin{enumerate}
+  \item Register Indirect with Displacement: 16 bitová hodnota v inštrukcii sa rozšíri o znamienko a pripočíta k hodnote univerzálneho registra.
+  \item PC Relative: Tento mód používajú skokové inštrukcie. Výpočet hodnoty spočíva v pričítaní vstupnej 26 bitovej hodnoty inštrukcie, ktorá je obohatená o znamienko k obsahu PC registra.
+\end{enumerate}
+
+Architektúra podporuje malú aj veľkú endianitu (little \& big endian), pre zjednodušenie implementácie sa ale používa hlavne big endian. V prípade potreby, je možné implementovať  hardvér na prevod do little endian (nastavenie pomocou registra SR[LEE]).
 
 \subsection{Inštrukčná sada}
+
+Inštrukčná sada je definovaná 200 inštrukciami, ktoré vieme rozdeliť do dvoch tried podľa dôležitosti implementácie alebo do šiestich skupín podľa funkcionality.
+
+Delenie podľa dôležitosti implementácie:
+
+\begin{enumerate}
+  \item Class 1: Inštrukcie v tejto skupine musia byť vždy implementované.
+  \item Class 2: Implementácia týchto inštrukcií je voliteľná a môžeme implementovať ľubovolnú podmnožinu (podľa potrieb našej aplikácie).
+\end{enumerate}
+
+Delenie podľa funkcionality:
+
+\begin{enumerate}
+	\item ORBIS32: Základné inštrukcie na riadenie toku programu, manipuláciu s 32 bitovými číslami či adresovanou pamäťou, DSP (digital signal processor) inštrukcie a špeciálne inštrukcie.
+	\item ORBIS64: Práca so 64 bitovými číslami a pamäťou
+	\item ORFPX32: Single-precision operácie s číslami s plávajúcou čiarkou
+	\item ORFPX64: Double-precision operácie s číslami s plávajúcou čiarkou a operácie s 64 bit adresovanou pamäťou
+	\item ORFPX64A32: Double-precision operácie s číslami s plávajúcou čiarkou za pomoci dvoch univerzálnych registrov ako operandov.
+	\item ORVDX64: Vektorové a DSP operácie
+\end{enumerate}
+
+Každá inštrukcia má dĺžku 32 bitov a operačný kód môže byť uložený v nesúvislých blokoch rôznej dĺžky. Pre jednoduchšiu analýzu sme celú sadu rozdelili na 13 skupín podľa pozície operačného kódu v inštrukcii.
+
+\begin{figure}[H]
+\centerline{\includegraphics[width=\columnwidth]{diagrams/InstructionGroups}}
+\caption{Skupiny inštrukcií podľa pozície operačného kódu}
+\label{fig}
+\end{figure}
 
 \section{ELF súbory}
 
@@ -81,7 +119,7 @@ Inštrukcie využívajú dva adresovacie módy:
 
 \subsection{Štruktúra aplikácie}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centerline{\includegraphics[width=\columnwidth]{diagrams/ClassDiagram}}
 \caption{Example of a figure caption.}
 \label{fig}
@@ -94,4 +132,3 @@ Inštrukcie využívajú dva adresovacie módy:
 \bibliography{my_bibs}
 
 \end{document}
-e
